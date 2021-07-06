@@ -53,7 +53,7 @@ jobs:
         with:
           major_pattern: "(MAJOR-B)"
           minor_pattern: "(MINOR-B)"
-          change_path: "src/projectb"
+          change_path: "src/projectB"
           namespace: "b"
 
   tag:
