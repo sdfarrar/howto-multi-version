@@ -1,3 +1,3 @@
-function subtract(a, b) {
-	return a - b;
+function subtract(a, b, c) {
+	return a - b - c;
 }
