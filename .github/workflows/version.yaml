@@ -66,13 +66,13 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Create Project A Tag
-        if: ${{ !env.ACT }} && ${{ needs.version-projectA.outputs.changed == 'true' }}
+        if: ${{ !env.ACT && needs.version-projectA.outputs.changed == 'true' }}
         run: |
           git tag -a ${{ needs.version-projectA.outputs.version_tag }} -m "Version ${{ needs.version-projectA.outputs.version_tag }}"
           git push origin ${{ needs.version-projectA.outputs.version_tag }}
 
       - name: Create Project B Tag
-        if: ${{ !env.ACT }} && ${{ needs.version-projectB.outputs.changed == 'true' }}
+        if: ${{ !env.ACT && needs.version-projectB.outputs.changed == 'true' }}
         run: |
           git tag -a ${{ needs.version-projectB.outputs.version_tag }} -m "Version ${{ needs.version-projectB.outputs.version_tag }}"
           git push origin ${{ needs.version-projectB.outputs.version_tag }}
