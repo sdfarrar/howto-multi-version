@@ -18,6 +18,7 @@ jobs:
       major: ${{ steps.version.outputs.major }}
       minor: ${{ steps.version.outputs.minor }}
       patch: ${{ steps.version.outputs.patch }}
+      changed: ${{ steps.version.outputs.changed }}
     steps:
       - name: Code Checkout
         uses: actions/checkout@v2
@@ -40,6 +41,7 @@ jobs:
       major: ${{ steps.version.outputs.major }}
       minor: ${{ steps.version.outputs.minor }}
       patch: ${{ steps.version.outputs.patch }}
+      changed: ${{ steps.version.outputs.changed }}
     steps:
       - name: Code Checkout
         uses: actions/checkout@v2
@@ -61,14 +63,15 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      - run: |
-          echo "Project A tag: ${{ needs.version-projectA.outputs.version_tag }}"
-          echo "Project B Tab: ${{ needs.version-projectB.outputs.version_tag }}"
+      - name: Create Project A Tag
+        if: ${{ !env.ACT }} && ${{ needs.version-projectA.outputs.changed == true }}
+        run: |
+          git tag -a ${{ needs.version-projectA.outputs.version_tag }} -m "Version ${{ needs.version-projectA.outputs.version_tag }}"
+          git push origin ${{ needs.version-projectA.outputs.version_tag }}
 
-      - run: echo ${{ needs.version-projectA.outputs.version_tag }}
-        #- name: Create Tag
-        #if: ${{ github.actor != 'nektos/act' }}
-        #run: |
-        #  git tag ${{ needs.version.outputs.version_tag }}
-        #  git push origin ${{ needs.version.outputs.version_tag }}
+      - name: Create Project B Tag
+        if: ${{ !env.ACT }} && ${{ needs.version-projectB.outputs.changed == true }}
+        run: |
+          git tag -a ${{ needs.version-projectB.outputs.version_tag }} -m "Version ${{ needs.version-projectB.outputs.version_tag }}"
+          git push origin ${{ needs.version-projectB.outputs.version_tag }}
 
