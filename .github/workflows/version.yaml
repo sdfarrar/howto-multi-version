@@ -1,0 +1,74 @@
+name: Version Projects
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/version.yaml"
+      - "src/projectA/**"
+      - "src/projectB/**"
+  workflow_dispatch:
+
+jobs:
+  version-projectA:
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.version.outputs.version_tag }}
+      version: ${{ steps.version.outputs.version }}
+      major: ${{ steps.version.outputs.major }}
+      minor: ${{ steps.version.outputs.minor }}
+      patch: ${{ steps.version.outputs.patch }}
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - id: version
+        uses: paulhatch/semantic-version@v4.0.2
+        with:
+          major_pattern: "(MAJOR-A)"
+          minor_pattern: "(MINOR-A)"
+          change_path: "src/projectA"
+          namespace: "a"
+
+  version-projectB:
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.version.outputs.version_tag }}
+      version: ${{ steps.version.outputs.version }}
+      major: ${{ steps.version.outputs.major }}
+      minor: ${{ steps.version.outputs.minor }}
+      patch: ${{ steps.version.outputs.patch }}
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - id: version
+        uses: paulhatch/semantic-version@v4.0.2
+        with:
+          major_pattern: "(MAJOR-B)"
+          minor_pattern: "(MINOR-B)"
+          change_path: "src/projectb"
+          namespace: "b"
+
+  tag:
+    runs-on: ubuntu-latest
+    needs: [version-projectA, version-projectB]
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - run: |
+          echo "Project A tag: ${{ needs.version-projectA.outputs.version_tag }}"
+          echo "Project B Tab: ${{ needs.version-projectB.outputs.version_tag }}"
+
+      - run: echo ${{ needs.version-projectA.outputs.version_tag }}
+        #- name: Create Tag
+        #if: ${{ github.actor != 'nektos/act' }}
+        #run: |
+        #  git tag ${{ needs.version.outputs.version_tag }}
+        #  git push origin ${{ needs.version.outputs.version_tag }}
+
